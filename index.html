@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Synthetic Dataset Generator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-dark bg-dark">
+    <div class="container">
+        <span class="navbar-brand fw-bold">Synthetic Dataset Generator</span>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero text-center">
+    <div class="container">
+        <h1 class="fw-bold">ML-Ready Synthetic Dataset Generator</h1>
+        <p class="lead mt-2">
+            Define dataset requirements, preview data, and download synthetic datasets.
+        </p>
+    </div>
+</section>
+
+<!-- Main Container -->
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+
+            <!-- Dataset Specification Form -->
+            <div class="card shadow-lg p-4">
+                <h4 class="text-center mb-4">Dataset Specification Form</h4>
+
+                <!-- Dataset Type -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Dataset Type</label>
+                    <select class="form-select" id="datasetType">
+                        <option value="Classification">Classification</option>
+                        <option value="Regression">Regression</option>
+                        <option value="Clustering">Clustering</option>
+                    </select>
+                </div>
+
+                <!-- Dataset Domain -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Dataset Domain</label>
+                    <select class="form-select" id="datasetDomain">
+                        <option>Healthcare</option>
+                        <option>Finance</option>
+                        <option>Education</option>
+                        <option>Business</option>
+                        <option>Custom</option>
+                    </select>
+                </div>
+
+                <!-- Dataset Size -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Dataset Size</label>
+                    <select class="form-select" id="datasetSize">
+                        <option value="small">Small (100 rows)</option>
+                        <option value="medium">Medium (1,000 rows)</option>
+                        <option value="large">Large (10,000 rows)</option>
+                    </select>
+                </div>
+
+                <!-- Column Specification -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Define Columns</label>
+
+                    <div id="columnsContainer">
+                        <div class="row g-2 mb-2 column-row">
+                            <div class="col-md-5">
+                                <input type="text" class="form-control column-name" placeholder="Column Name" required>
+                            </div>
+                            <div class="col-md-5">
+                                <select class="form-select column-type">
+                                    <option value="numerical">Numerical</option>
+                                    <option value="categorical">Categorical</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 d-grid">
+                                <button type="button" class="btn btn-danger" onclick="removeColumn(this)">
+                                    Remove
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid mt-2">
+                        <button type="button" class="btn btn-outline-primary" onclick="addColumn()">
+                            + Add Column
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Target Column -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Target Column (Optional)</label>
+                    <input type="text" class="form-control" id="targetColumn" placeholder="e.g. Purchased, Price">
+                </div>
+
+                <!-- ML Ready -->
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="mlReady" checked>
+                    <label class="form-check-label fw-bold">
+                        Generate ML-Ready Dataset (No missing values, balanced data)
+                    </label>
+                </div>
+
+                <!-- Generate Button -->
+                <div class="d-grid mt-4">
+                    <button class="btn btn-primary btn-lg" onclick="showPreviewDemo()">
+                        Generate Dataset
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dataset Preview -->
+            <div id="previewSection" class="mt-5" style="display:none;">
+                <h4 class="text-center mb-3">Dataset Preview</h4>
+
+                <!-- Summary -->
+                <div class="row text-center mb-3">
+                    <div class="col-md-3">
+                        <div class="alert alert-secondary">
+                            <strong>Rows</strong><br>
+                            <span id="rowCount">-</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="alert alert-secondary">
+                            <strong>Columns</strong><br>
+                            <span id="colCount">-</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="alert alert-secondary">
+                            <strong>Dataset Type</strong><br>
+                            <span id="previewDatasetType">-</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="alert alert-success">
+                            <strong>ML Ready</strong><br>✔ Yes
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <thead class="table-dark">
+                            <tr id="previewHeader"></tr>
+                        </thead>
+                        <tbody id="previewBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Download Section -->
+            <div id="downloadSection" class="mt-4" style="display:none;">
+                <h4 class="text-center mb-3">Download Dataset</h4>
+
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">File Name</label>
+                            <input type="text" class="form-control" id="fileName" placeholder="synthetic_dataset">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Export Format</label>
+                            <select class="form-select" id="exportFormat">
+                                <option value="csv">CSV</option>
+                                <option value="excel">Excel</option>
+                                <option value="json">JSON</option>
+                            </select>
+                        </div>
+
+                        <div class="d-grid mb-3">
+                            <button class="btn btn-success btn-lg" onclick="downloadDataset()">
+                                Download Dataset
+                            </button>
+                        </div>
+
+                        <div class="d-grid">
+                            <button class="btn btn-outline-secondary btn-lg" onclick="downloadMetadata()">
+                                Download Dataset Metadata
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer text-center">
+    <div class="container">
+        <p class="mb-0">© 2026 Synthetic Dataset Generator</p>
+    </div>
+</footer>
+
+<!-- JavaScript -->
+<script>
+function addColumn() {
+    const container = document.getElementById("columnsContainer");
+    const row = document.createElement("div");
+    row.className = "row g-2 mb-2 column-row";
+    row.innerHTML = `
+        <div class="col-md-5">
+            <input type="text" class="form-control column-name" placeholder="Column Name" required>
+        </div>
+        <div class="col-md-5">
+            <select class="form-select column-type">
+                <option value="numerical">Numerical</option>
+                <option value="categorical">Categorical</option>
+            </select>
+        </div>
+        <div class="col-md-2 d-grid">
+            <button type="button" class="btn btn-danger" onclick="removeColumn(this)">Remove</button>
+        </div>`;
+    container.appendChild(row);
+}
+
+function removeColumn(btn) {
+    const rows = document.querySelectorAll(".column-row");
+    if (rows.length > 1) btn.closest(".column-row").remove();
+    else alert("At least one column is required.");
+}
+
+function showPreviewDemo() {
+    const demoData = [
+        { Age: 25, Salary: 50000, Purchased: 0 },
+        { Age: 30, Salary: 65000, Purchased: 1 },
+        { Age: 22, Salary: 40000, Purchased: 0 },
+        { Age: 35, Salary: 80000, Purchased: 1 }
+    ];
+
+    document.getElementById("previewSection").style.display = "block";
+    document.getElementById("downloadSection").style.display = "block";
+
+    document.getElementById("rowCount").innerText = demoData.length;
+    document.getElementById("colCount").innerText = Object.keys(demoData[0]).length;
+    document.getElementById("previewDatasetType").innerText =
+        document.getElementById("datasetType").value;
+
+    const header = document.getElementById("previewHeader");
+    header.innerHTML = "";
+    Object.keys(demoData[0]).forEach(col => header.innerHTML += `<th>${col}</th>`);
+
+    const body = document.getElementById("previewBody");
+    body.innerHTML = "";
+    demoData.forEach(row => {
+        let tr = "<tr>";
+        Object.values(row).forEach(val => tr += `<td>${val}</td>`);
+        tr += "</tr>";
+        body.innerHTML += tr;
+    });
+}
+
+function downloadDataset() {
+    const name = document.getElementById("fileName").value || "synthetic_dataset";
+    const format = document.getElementById("exportFormat").value;
+    window.location.href = `/download?filename=${name}&format=${format}`;
+}
+
+function downloadMetadata() {
+    const name = document.getElementById("fileName").value || "synthetic_dataset";
+    window.location.href = `/download-metadata?filename=${name}`;
+}
+</script>
+
+</body>
+</html>
