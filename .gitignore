@@ -1,0 +1,15 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+
+# Model files
+model/*.pkl
+
+# Data files
+data/*.csv
+
+# OS files
+.DS_Store
