@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Our AI Works</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="text-center mb-4">
+            <a href="/" class="btn btn-outline" style="float: left;">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+            <h1>How Our AI Works</h1>
+        </div>
+
+        <div class="card" style="text-align: left;">
+            <div class="mb-4">
+                <h3><i class="fas fa-chart-bar icon" style="color: var(--accent-color);"></i> Gaussian Copula Model</h3>
+                <p>Used for structured tabular data. The model learns statistical correlations between columns to
+                    generate realistic new rows that preserve the original distribution.</p>
+            </div>
+
+            <div class="mb-4">
+                <h3><i class="fas fa-wave-square icon" style="color: var(--success-color);"></i> LSTM Time-Series Model
+                </h3>
+                <p>Automatically detected when date/time columns are present. Uses Long Short-Term Memory (LSTM) neural
+                    networks to learn temporal sequences and patterns.</p>
+            </div>
+
+            <div>
+                <h3><i class="fas fa-exclamation-triangle icon" style="color: var(--danger-color);"></i> Limitations
+                </h3>
+                <ul style="list-style-type: disc; margin-left: 20px; color: var(--text-secondary);">
+                    <li>Very small datasets (under 30 rows) may reduce realism.</li>
+                    <li>Time-series generation requires numeric signals.</li>
+                    <li>Pure ID datasets (unique identifiers only) cannot be effectively modeled.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

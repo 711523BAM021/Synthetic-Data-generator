@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results - Synthetic Data Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="text-center mb-4">
+            <a href="/" class="btn btn-outline" style="float: left;">
+                <i class="fas fa-arrow-left"></i> New Generation
+            </a>
+            <h1>Generation Complete</h1>
+            <p>Here are the results of your synthetic data generation.</p>
+        </div>
+
+        <!-- Analysis Card -->
+        <div class="card">
+            <h2><i class="fas fa-database icon"></i> Dataset Analysis</h2>
+
+            <div class="grid-2" style="text-align: left; margin-top: 2rem;">
+                <div>
+                    <p><strong>Dataset Type:</strong> <span class="badge">{{ dataset_type }}</span></p>
+                    <p><strong>Model Used:</strong> {{ model_type }}</p>
+                    <p><strong>Reason:</strong> {{ reason }}</p>
+                </div>
+                <div>
+                    <p><strong>Structure:</strong> {{ numeric_cols }} Numeric | {{ cat_cols }} Categorical</p>
+                    <p><strong>Processing Time:</strong> {{ time_taken }}s</p>
+
+                    {% if realism != "N/A" %}
+                    <p><strong>Realism Score:</strong>
+                        <span class="badge"
+                            style="background: {{ 'rgba(16, 185, 129, 0.2)' if realism|float > 80 else 'rgba(239, 68, 68, 0.2)' }}; color: {{ '#34d399' if realism|float > 80 else '#f87171' }};">
+                            {{ realism }}%
+                        </span>
+                    </p>
+                    {% else %}
+                    <p><strong>Realism Score:</strong> N/A (No numeric data available)</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Limitations Alert -->
+        {% if limitations %}
+        <div class="card" style="border-color: var(--danger-color);">
+            <h3 style="color: var(--danger-color);"><i class="fas fa-exclamation-circle icon"></i> Limitations</h3>
+            <ul style="text-align: left; list-style-type: disc; margin-left: 20px;">
+                {% for l in limitations %}
+                <li>{{ l }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <!-- Charts -->
+        {% if chart %}
+        <div class="card">
+            <h2><i class="fas fa-chart-area icon"></i> Distribution Comparison</h2>
+            <div style="background: white; padding: 1rem; border-radius: 8px; display: inline-block;">
+                <img src="{{ url_for('static', filename=chart) }}" style="max-width: 100%; height: auto;">
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Preview -->
+        <div class="card">
+            <h2><i class="fas fa-table icon"></i> Synthetic Data Preview</h2>
+            <div style="overflow-x: auto;">
+                {{ synth_preview|safe }}
+            </div>
+        </div>
+
+        <!-- Downloads -->
+        <div class="grid-2">
+            <a href="javascript:void(0)" onclick="promptDownload('real')" class="btn btn-outline"
+                style="text-align: center;">
+                <i class="fas fa-file-download icon"></i> Download Cleaned Real Data
+            </a>
+            <a href="javascript:void(0)" onclick="promptDownload('synth')" class="btn" style="text-align: center;">
+                <i class="fas fa-file-download icon"></i> Download Synthetic Data
+            </a>
+        </div>
+
+        <script>
+            function promptDownload(type) {
+                let defaultName = type === 'real' ? "cleaned_real_data.csv" : "synthetic_data.csv";
+                let filename = prompt("Enter filename to save as:", defaultName);
+
+                if (filename) {
+                    if (!filename.toLowerCase().endsWith(".csv")) {
+                        filename += ".csv";
+                    }
+                    let url = type === 'real' ? "/download_real" : "/download_synth";
+                    window.location.href = url + "?filename=" + encodeURIComponent(filename);
+                }
+            }
+        </script>
+
+        <br><br>
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Synthetic Data Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script>
+        function showLoading() {
+            document.getElementById("loading").style.display = "block";
+            document.getElementById("upload-btn-text").innerText = "Processing...";
+        }
+    </script>
+</head>
+<body>
+
+    <div class="container">
+        <div class="text-center mb-4">
+            <h1>AI Synthetic Data Generator</h1>
+            <p>Generate high-quality synthetic datasets using advanced ML models.</p>
+        </div>
+
+        <div class="card">
+            <h2>Upload Dataset</h2>
+            <p>Supported formats: CSV. Maximum size: 50MB.</p>
+            
+            <form action="/generate" method="POST" enctype="multipart/form-data" onsubmit="showLoading()">
+                <input type="file" name="file" required>
+                
+                <button type="submit" class="btn">
+                    <span id="upload-btn-text">Generate Synthetic Data</span>
+                </button>
+            </form>
+
+            <div id="loading">
+                <div class="spinner"></div>
+                <p>Analyzing data and training models...</p>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <a href="/about" class="btn btn-outline">
+                <i class="fas fa-info-circle icon"></i> How Our AI Works
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>
