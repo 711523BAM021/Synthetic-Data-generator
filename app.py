@@ -4,7 +4,7 @@ import numpy as np
 import os
 import time
 
-# 🔥 FIX FOR MATPLOTLIB CRASH IN FLASK
+
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
